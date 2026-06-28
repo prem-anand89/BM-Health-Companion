@@ -81,3 +81,16 @@ export const BellIcon = (p: IconProps) => (
     <path d="M13.7 21a2 2 0 0 1-3.4 0" />
   </svg>
 );
+
+export const FlaskIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <path d="M9 3h6M9 3v7l-4 9h14l-4-9V3" />
+    <path d="M7 16h10" />
+  </svg>
+);
+
+export const StopIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <rect x="3" y="3" width="18" height="18" rx="3" />
+  </svg>
+);

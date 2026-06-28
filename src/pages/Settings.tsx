@@ -70,6 +70,16 @@ export function Settings() {
     }
   }
 
+  async function updateSymptomReminder(time: string) {
+    const next = { ...prefs, symptomReminderTime: time || null };
+    setPrefsState(next);
+    setPreferences(next);
+    if (perm === 'granted') {
+      const reminders = await collectReminders();
+      syncReminders(reminders);
+    }
+  }
+
   async function exportData() {
     const dump: Record<string, unknown> = { exportedAt: new Date().toISOString() };
     for (const m of modules) {
@@ -112,28 +122,58 @@ export function Settings() {
 
       <div className="mt-6">
         <SectionHeader title="Reminders" />
-        <Card>
+        <Card className="space-y-4">
           {!notificationsSupported() ? (
             <p className="text-sm text-slate-500">
               Notifications are not supported on this device.
-            </p>
-          ) : perm === 'granted' ? (
-            <p className="text-sm text-emerald-700">
-              ✓ Reminders are on. You'll be nudged when something is due.
             </p>
           ) : perm === 'denied' ? (
             <p className="text-sm text-slate-500">
               Reminders are blocked. Enable notifications for this app in your
               browser settings to turn them back on.
             </p>
-          ) : (
+          ) : perm !== 'granted' ? (
             <>
-              <p className="mb-3 text-sm text-slate-600">
+              <p className="text-sm text-slate-600">
                 Get a gentle reminder when a dose or check-in is due.
               </p>
               <button className="btn-primary" onClick={enableNotifications}>
                 Turn on reminders
               </button>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-emerald-700">
+                ✓ Reminders are on — you'll be nudged when something is due.
+              </p>
+
+              <div className="border-t border-slate-100 pt-4">
+                <label className="field-label">Medication reminders</label>
+                <p className="text-sm text-slate-500">
+                  Automatic — fires at each scheduled medication time.
+                </p>
+              </div>
+
+              <div className="border-t border-slate-100 pt-4">
+                <label className="field-label">Daily symptom check-in</label>
+                <p className="mb-2 text-sm text-slate-500">
+                  Pick a daily time to be reminded to log how you feel.
+                </p>
+                <input
+                  type="time"
+                  className="field-input"
+                  value={prefs.symptomReminderTime ?? ''}
+                  onChange={(e) => updateSymptomReminder(e.target.value)}
+                />
+                {prefs.symptomReminderTime && (
+                  <button
+                    className="mt-2 text-sm text-rose-600"
+                    onClick={() => updateSymptomReminder('')}
+                  >
+                    Remove check-in reminder
+                  </button>
+                )}
+              </div>
             </>
           )}
         </Card>

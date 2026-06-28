@@ -62,7 +62,9 @@ export interface DayAdherence {
 }
 
 export function dayAdherence(doses: DoseInstance[]): DayAdherence {
-  const due = doses.length;
-  const taken = doses.filter((d) => d.status === 'taken').length;
+  // Stopped doses are excluded — stopping a med isn't a missed dose.
+  const active = doses.filter((d) => d.status !== 'stopped');
+  const due = active.length;
+  const taken = active.filter((d) => d.status === 'taken').length;
   return { due, taken, ratio: due === 0 ? 1 : taken / due };
 }

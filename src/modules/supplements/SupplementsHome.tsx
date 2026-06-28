@@ -1,41 +1,41 @@
 import { Link } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { medicationsTable, medLogsTable, type DoseStatus } from './db';
-import { buildDayDoses, dayAdherence, type DoseInstance } from './schedule';
+import { supplementsTable, supplementLogsTable, type SupplementStatus } from './db';
+import { buildDayDoses, dayAdherence, type SupplementDose } from './schedule';
 import { dayKey } from '../../core/dates';
 import { PageHeader } from '../../components/PageHeader';
 import { Card, EmptyState, ProgressRing, StatTile } from '../../components/ui';
-import { PillIcon, PlusIcon, CheckIcon } from '../../components/icons';
+import { FlaskIcon, PlusIcon, CheckIcon } from '../../components/icons';
 
-export function MedicationsHome() {
+export function SupplementsHome() {
   const today = dayKey();
 
   const data = useLiveQuery(async () => {
-    const meds = (await medicationsTable().toArray()).filter((m) => !m.archived);
-    const logs = await medLogsTable().where('dayKey').equals(today).toArray();
-    return { meds, doses: buildDayDoses(meds, logs, today) };
+    const supps = (await supplementsTable().toArray()).filter((s) => !s.archived);
+    const logs = await supplementLogsTable().where('dayKey').equals(today).toArray();
+    return { supps, doses: buildDayDoses(supps, logs, today) };
   }, [today]);
 
-  const meds = data?.meds ?? [];
+  const supps = data?.supps ?? [];
   const doses = data?.doses ?? [];
   const { due, taken, ratio } = dayAdherence(doses);
 
-  async function record(dose: DoseInstance, status: DoseStatus) {
-    const existing = await medLogsTable()
-      .where('[medId+dayKey]')
-      .equals([dose.med.id!, today])
+  async function record(dose: SupplementDose, status: SupplementStatus) {
+    const existing = await supplementLogsTable()
+      .where('[suppId+dayKey]')
+      .equals([dose.supp.id!, today])
       .filter((l) => l.time === dose.time)
       .first();
 
     if (existing) {
       if (existing.status === status) {
-        await medLogsTable().delete(existing.id!);
+        await supplementLogsTable().delete(existing.id!);
         return;
       }
-      await medLogsTable().update(existing.id!, { status, recordedAt: Date.now() });
+      await supplementLogsTable().update(existing.id!, { status, recordedAt: Date.now() });
     } else {
-      await medLogsTable().add({
-        medId: dose.med.id!,
+      await supplementLogsTable().add({
+        suppId: dose.supp.id!,
         dayKey: today,
         time: dose.time,
         status,
@@ -43,32 +43,31 @@ export function MedicationsHome() {
       });
     }
 
-    // "Stopped" archives the whole medication so it disappears from future days.
     if (status === 'stopped') {
-      await medicationsTable().update(dose.med.id!, { archived: true });
+      await supplementsTable().update(dose.supp.id!, { archived: true });
     }
   }
 
   return (
     <div>
       <PageHeader
-        title="Medications"
+        title="Supplements"
         subtitle="Today's schedule"
         action={
-          <Link to="/m/medications/new" aria-label="Add medication" className="btn-primary !px-3 !py-2">
+          <Link to="/m/supplements/new" aria-label="Add supplement" className="btn-primary !px-3 !py-2">
             <PlusIcon />
           </Link>
         }
       />
 
-      {meds.length === 0 ? (
+      {supps.length === 0 ? (
         <EmptyState
-          icon={<PillIcon />}
-          title="No medications yet"
-          body="Add a medication and its schedule. Your companion will remind you and track how you're doing."
+          icon={<FlaskIcon />}
+          title="No supplements yet"
+          body="Add vitamins, minerals or other supplements. Your companion will remind you and track your intake."
           action={
-            <Link to="/m/medications/new" className="btn-primary">
-              <PlusIcon className="!h-5 !w-5" /> Add medication
+            <Link to="/m/supplements/new" className="btn-primary">
+              <PlusIcon className="!h-5 !w-5" /> Add supplement
             </Link>
           }
         />
@@ -89,8 +88,8 @@ export function MedicationsHome() {
           ) : (
             <ul className="space-y-3">
               {doses.map((dose) => (
-                <DoseRow
-                  key={`${dose.med.id}-${dose.time}`}
+                <SupplementRow
+                  key={`${dose.supp.id}-${dose.time}`}
                   dose={dose}
                   onRecord={record}
                 />
@@ -99,10 +98,10 @@ export function MedicationsHome() {
           )}
 
           <Link
-            to="/m/medications/list"
+            to="/m/supplements/list"
             className="block text-center text-sm font-semibold text-brand-700"
           >
-            Manage all medications
+            Manage all supplements
           </Link>
         </div>
       )}
@@ -110,12 +109,12 @@ export function MedicationsHome() {
   );
 }
 
-function DoseRow({
+function SupplementRow({
   dose,
   onRecord,
 }: {
-  dose: DoseInstance;
-  onRecord: (d: DoseInstance, s: DoseStatus) => void;
+  dose: SupplementDose;
+  onRecord: (d: SupplementDose, s: SupplementStatus) => void;
 }) {
   const taken = dose.status === 'taken';
   const skipped = dose.status === 'skipped';
@@ -130,10 +129,10 @@ function DoseRow({
           </div>
           <div className="min-w-0 flex-1">
             <p className={`font-semibold text-slate-800 ${taken || stopped ? 'line-through' : ''}`}>
-              {dose.med.name}
+              {dose.supp.name}
             </p>
             <p className="truncate text-sm text-slate-500">
-              {dose.med.dose} · {dose.med.form}
+              {dose.supp.dose} · {dose.supp.form}
               {skipped && ' · skipped'}
               {stopped && ' · stopped'}
             </p>
@@ -163,7 +162,7 @@ function DoseRow({
             Skip
           </button>
           <button
-            aria-label={stopped ? 'Medication stopped' : 'Stop this medication'}
+            aria-label={stopped ? 'Supplement stopped' : 'Stop this supplement'}
             onClick={() => onRecord(dose, 'stopped')}
             className={`flex h-11 flex-1 items-center justify-center rounded-2xl text-sm font-semibold transition ${
               stopped

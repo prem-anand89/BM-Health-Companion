@@ -23,7 +23,7 @@ export interface Medication {
   archived?: boolean;
 }
 
-export type DoseStatus = 'taken' | 'skipped';
+export type DoseStatus = 'taken' | 'skipped' | 'stopped';
 
 export interface MedLog {
   id?: number;

@@ -3,6 +3,7 @@ import { applyModuleSchema } from './db';
 import { rankInsights } from './insights';
 import { medicationsModule } from '../modules/medications/manifest';
 import { symptomsModule } from '../modules/symptoms/manifest';
+import { supplementsModule } from '../modules/supplements/manifest';
 
 /**
  * The ordered list of installed modules. THIS is the single place you touch to
@@ -10,7 +11,7 @@ import { symptomsModule } from '../modules/symptoms/manifest';
  * Everything else — nav, dashboard, schema, insights, reminders — assembles
  * itself from this array.
  */
-export const modules: HealthModule[] = [medicationsModule, symptomsModule];
+export const modules: HealthModule[] = [medicationsModule, symptomsModule, supplementsModule];
 
 export function getModule(id: string): HealthModule | undefined {
   return modules.find((m) => m.id === id);

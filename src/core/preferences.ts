@@ -6,6 +6,8 @@
 export interface DisplayPreferences {
   largeText: boolean;
   highContrast: boolean;
+  /** "HH:mm" 24h time for daily symptom check-in notification, or null to disable. */
+  symptomReminderTime: string | null;
 }
 
 const KEY = 'bm-health:prefs';
@@ -13,6 +15,7 @@ const KEY = 'bm-health:prefs';
 const defaults: DisplayPreferences = {
   largeText: false,
   highContrast: false,
+  symptomReminderTime: null,
 };
 
 export function getPreferences(): DisplayPreferences {
