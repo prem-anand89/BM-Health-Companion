@@ -11,18 +11,22 @@ import { modules } from './core/registry';
  * base path (including their index screen), so a new module brings its screens
  * without editing this file — only registry.ts changes.
  */
-export const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Layout />,
-    children: [
-      { index: true, element: <Dashboard /> },
-      { path: 'coach', element: <Coach /> },
-      { path: 'settings', element: <Settings /> },
-      ...modules.map((m) => ({
-        path: `m/${m.id}`,
-        children: m.routes,
-      })),
-    ],
-  },
-]);
+export const router = createBrowserRouter(
+  [
+    {
+      path: '/',
+      element: <Layout />,
+      children: [
+        { index: true, element: <Dashboard /> },
+        { path: 'coach', element: <Coach /> },
+        { path: 'settings', element: <Settings /> },
+        ...modules.map((m) => ({
+          path: `m/${m.id}`,
+          children: m.routes,
+        })),
+      ],
+    },
+  ],
+  // Honour the Vite base path so routing works under a GitHub Pages subpath.
+  { basename: import.meta.env.BASE_URL },
+);

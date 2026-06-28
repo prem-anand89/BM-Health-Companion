@@ -3,7 +3,13 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'node:path';
 
+// When building for GitHub Pages the app is served from a repo subpath
+// (https://<user>.github.io/BM-Health-Companion/). `npm run build` sets
+// DEPLOY_TARGET=pages via the workflow; locally base stays '/'.
+const base = process.env.DEPLOY_TARGET === 'pages' ? '/BM-Health-Companion/' : '/';
+
 export default defineConfig({
+  base,
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -23,8 +29,9 @@ export default defineConfig({
         background_color: '#f8fafc',
         display: 'standalone',
         orientation: 'portrait',
-        start_url: '/',
-        scope: '/',
+        // Relative so the manifest resolves correctly under any base path.
+        start_url: '.',
+        scope: '.',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
@@ -37,7 +44,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        navigateFallback: '/offline.html',
+        navigateFallback: `${base}offline.html`,
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         runtimeCaching: [
           {
