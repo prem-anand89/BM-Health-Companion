@@ -2,7 +2,7 @@ name: Build & Deploy
 
 on:
   push:
-    branches: [main, claude/health-companion-app-design-uakhsk]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -40,8 +40,9 @@ jobs:
           path: dist
 
   deploy:
-    # Deploy only on pushes / manual runs, never on pull_request builds.
-    if: github.event_name != 'pull_request'
+    # Deploy only from the default branch (the github-pages environment is
+    # scoped to main); PR builds just verify the bundle.
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment:
