@@ -5,6 +5,8 @@ import {
   getPreferences,
   setPreferences,
   type DisplayPreferences,
+  type GlucoseUnit,
+  type WeightUnit,
 } from '../core/preferences';
 import {
   permissionStatus,
@@ -176,6 +178,80 @@ export function Settings() {
               </div>
             </>
           )}
+        </Card>
+      </div>
+
+      <div className="mt-6">
+        <SectionHeader title="Health Units" />
+        <Card className="space-y-4">
+          <div>
+            <label className="field-label">Blood glucose unit</label>
+            <div className="mt-1 flex gap-2">
+              {(['mg/dL', 'mmol/L'] as GlucoseUnit[]).map((u) => (
+                <button
+                  key={u}
+                  type="button"
+                  onClick={() => update({ glucoseUnit: u })}
+                  className={`flex-1 rounded-2xl py-2.5 text-sm font-semibold transition ${
+                    prefs.glucoseUnit === u ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-600'
+                  }`}
+                >
+                  {u}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="border-t border-slate-100 pt-4">
+            <label className="field-label">Glucose target range (mg/dL)</label>
+            <div className="mt-1 flex items-center gap-3">
+              <input
+                type="number"
+                className="field-input flex-1"
+                placeholder="Min (e.g. 70)"
+                value={prefs.glucoseTargetMin}
+                onChange={(e) => update({ glucoseTargetMin: Number(e.target.value) || 70 })}
+              />
+              <span className="text-slate-400">–</span>
+              <input
+                type="number"
+                className="field-input flex-1"
+                placeholder="Max (e.g. 140)"
+                value={prefs.glucoseTargetMax}
+                onChange={(e) => update({ glucoseTargetMax: Number(e.target.value) || 140 })}
+              />
+            </div>
+          </div>
+
+          <div className="border-t border-slate-100 pt-4">
+            <label className="field-label">Weight unit</label>
+            <div className="mt-1 flex gap-2">
+              {(['kg', 'lbs'] as WeightUnit[]).map((u) => (
+                <button
+                  key={u}
+                  type="button"
+                  onClick={() => update({ weightUnit: u })}
+                  className={`flex-1 rounded-2xl py-2.5 text-sm font-semibold transition ${
+                    prefs.weightUnit === u ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-600'
+                  }`}
+                >
+                  {u}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="border-t border-slate-100 pt-4">
+            <label className="field-label">Height (cm) — for BMI calculation</label>
+            <input
+              type="number"
+              inputMode="numeric"
+              className="field-input mt-1"
+              placeholder="e.g. 170"
+              value={prefs.heightCm ?? ''}
+              onChange={(e) => update({ heightCm: e.target.value ? Number(e.target.value) : null })}
+            />
+          </div>
         </Card>
       </div>
 

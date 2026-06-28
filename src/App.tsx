@@ -3,6 +3,8 @@ import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
 import { Coach } from './pages/Coach';
 import { Settings } from './pages/Settings';
+import { History } from './pages/History';
+import { Report } from './pages/Report';
 import { modules } from './core/registry';
 
 /**
@@ -20,6 +22,8 @@ export const router = createBrowserRouter(
         { index: true, element: <Dashboard /> },
         { path: 'coach', element: <Coach /> },
         { path: 'settings', element: <Settings /> },
+        { path: 'history', element: <History /> },
+        { path: 'report', element: <Report /> },
         ...modules.map((m) => ({
           path: `m/${m.id}`,
           children: m.routes,

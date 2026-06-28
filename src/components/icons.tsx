@@ -94,3 +94,56 @@ export const StopIcon = (p: IconProps) => (
     <rect x="3" y="3" width="18" height="18" rx="3" />
   </svg>
 );
+
+export const DropIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <path d="M12 2C12 2 5 9.5 5 14a7 7 0 0 0 14 0c0-4.5-7-12-7-12z" />
+  </svg>
+);
+
+export const HeartIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <path d="M12 21C12 21 3 14 3 8a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6-9 13-9 13z" />
+  </svg>
+);
+
+export const ScaleIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <rect x="3" y="14" width="18" height="7" rx="2" />
+    <path d="M12 14V3" />
+    <path d="M8 6l4-3 4 3" />
+    <path d="M7 10h10" />
+  </svg>
+);
+
+export const LeafIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <path d="M11 20A7 7 0 0 1 4 13c0-5 7-11 7-11s7 6 7 11a7 7 0 0 1-7 7z" />
+    <path d="M11 20v-9" />
+  </svg>
+);
+
+export const DumbbellIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <path d="M6.5 6.5h11" />
+    <path d="M6.5 17.5h11" />
+    <rect x="2" y="5" width="4" height="14" rx="2" />
+    <rect x="18" y="5" width="4" height="14" rx="2" />
+    <path d="M6 12h12" />
+  </svg>
+);
+
+export const CalendarIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <rect x="3" y="4" width="18" height="18" rx="2" />
+    <path d="M16 2v4M8 2v4M3 10h18" />
+  </svg>
+);
+
+export const ClipboardIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <rect x="8" y="2" width="8" height="4" rx="1" />
+    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+    <path d="M9 12h6M9 16h4" />
+  </svg>
+);

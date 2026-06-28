@@ -5,7 +5,7 @@ import { modules, collectInsights, collectReminders } from '../core/registry';
 import type { Insight } from '../core/module';
 import { InsightCard } from '../components/InsightCard';
 import { SectionHeader } from '../components/ui';
-import { GearIcon } from '../components/icons';
+import { GearIcon, CalendarIcon, ClipboardIcon } from '../components/icons';
 import { permissionStatus, syncReminders } from '../core/notifications';
 
 /**
@@ -69,6 +69,32 @@ export function Dashboard() {
             const Widget = m.DashboardWidget;
             return <Widget key={m.id} />;
           })}
+        </div>
+      </section>
+
+      <section>
+        <SectionHeader title="Tools" />
+        <div className="grid grid-cols-2 gap-3">
+          <Link
+            to="/history"
+            className="flex items-center gap-3 rounded-3xl bg-white p-4 shadow-sm active:scale-95 transition"
+          >
+            <CalendarIcon className="text-brand-600" />
+            <div>
+              <p className="font-semibold text-slate-800 text-sm">History</p>
+              <p className="text-xs text-slate-500">Any day's log</p>
+            </div>
+          </Link>
+          <Link
+            to="/report"
+            className="flex items-center gap-3 rounded-3xl bg-white p-4 shadow-sm active:scale-95 transition"
+          >
+            <ClipboardIcon className="text-brand-600" />
+            <div>
+              <p className="font-semibold text-slate-800 text-sm">Report</p>
+              <p className="text-xs text-slate-500">Weekly summary</p>
+            </div>
+          </Link>
         </div>
       </section>
     </div>
