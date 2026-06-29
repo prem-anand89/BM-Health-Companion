@@ -142,15 +142,29 @@ export function SymptomLog() {
               {severity}/10 · {severityLabel(severity)}
             </span>
           </div>
-          <input
-            type="range"
-            min={0}
-            max={10}
-            step={1}
-            value={severity}
-            onChange={(e) => setSeverity(Number(e.target.value))}
-            className="h-3 w-full cursor-pointer accent-brand-600"
-          />
+          {/* Discrete buttons instead of a slider — far easier for users with
+              tremor or reduced fine motor control (plan item K / §4.2). */}
+          <div className="grid grid-cols-6 gap-2">
+            {Array.from({ length: 11 }, (_, n) => {
+              const active = severity === n;
+              return (
+                <button
+                  key={n}
+                  type="button"
+                  aria-label={`Severity ${n} out of 10`}
+                  aria-pressed={active}
+                  onClick={() => setSeverity(n)}
+                  className={`flex h-12 items-center justify-center rounded-2xl text-base font-bold transition ${
+                    active
+                      ? 'bg-brand-600 text-white'
+                      : 'bg-slate-100 text-slate-600 active:scale-95'
+                  }`}
+                >
+                  {n}
+                </button>
+              );
+            })}
+          </div>
           <div className="flex justify-between text-xs text-slate-400">
             <span>None</span>
             <span>Worst</span>

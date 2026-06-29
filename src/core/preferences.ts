@@ -21,6 +21,15 @@ export interface DisplayPreferences {
   weightUnit: WeightUnit;
   /** Height in cm for BMI calculation, or null if not set. */
   heightCm: number | null;
+  /**
+   * Module ids the patient has chosen to surface on the Home dashboard. Empty
+   * array means "use the default set" (see defaultPinnedIds). Lets a caregiver
+   * promote the trackers that matter for this patient (e.g. Glucose for a
+   * diabetic) without a code change.
+   */
+  pinnedModules: string[];
+  /** Epoch ms of the last data export, or null if never exported. */
+  lastExportAt: number | null;
 }
 
 const KEY = 'bm-health:prefs';
@@ -34,7 +43,19 @@ const defaults: DisplayPreferences = {
   glucoseTargetMax: 140,
   weightUnit: 'kg',
   heightCm: null,
+  pinnedModules: [],
+  lastExportAt: null,
 };
+
+/** The modules pinned to Home when the patient hasn't customised the set. */
+export function defaultPinnedIds(): string[] {
+  return ['medications', 'symptoms', 'supplements'];
+}
+
+/** Resolve which module ids should appear on Home for the given prefs. */
+export function resolvePinned(prefs: DisplayPreferences): string[] {
+  return prefs.pinnedModules.length > 0 ? prefs.pinnedModules : defaultPinnedIds();
+}
 
 export function getPreferences(): DisplayPreferences {
   try {

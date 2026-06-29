@@ -3,13 +3,14 @@
 @tailwind utilities;
 
 :root {
-  /* Elderly-first: large, comfortable base size. Overridable via .large-text */
-  font-size: 18px;
+  /* Elderly-first: large, comfortable base size. Overridable via .large-text.
+     Utilities like text-sm/text-xs are rem-based, so they scale from here. */
+  font-size: 20px;
   -webkit-tap-highlight-color: transparent;
 }
 
 html.large-text {
-  font-size: 21px;
+  font-size: 23px;
 }
 
 html.high-contrast {

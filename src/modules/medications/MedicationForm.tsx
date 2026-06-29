@@ -4,6 +4,7 @@ import { medicationsTable, type MedForm, type Medication } from './db';
 import { dayKey } from '../../core/dates';
 import { PageHeader } from '../../components/PageHeader';
 import { Card } from '../../components/ui';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { PlusIcon } from '../../components/icons';
 
 const FORMS: MedForm[] = ['tablet', 'capsule', 'liquid', 'injection', 'other'];
@@ -26,6 +27,8 @@ export function MedicationForm() {
   const [quantity, setQuantity] = useState('');
   const [notes, setNotes] = useState('');
   const [loaded, setLoaded] = useState(!editing);
+  const [confirmRemove, setConfirmRemove] = useState(false);
+  const [dupName, setDupName] = useState<string | null>(null);
 
   useEffect(() => {
     if (!editing) return;
@@ -63,6 +66,22 @@ export function MedicationForm() {
 
   async function save() {
     if (!name.trim()) return;
+    // Soft duplicate check on new entries — easy to double-add on a shared
+    // family device. Warn, don't block (plan item J / §4.4).
+    if (!editing) {
+      const trimmed = name.trim().toLowerCase();
+      const clash = (await medicationsTable().toArray()).some(
+        (m) => !m.archived && m.name.trim().toLowerCase() === trimmed,
+      );
+      if (clash) {
+        setDupName(name.trim());
+        return;
+      }
+    }
+    await persist();
+  }
+
+  async function persist() {
     const fields: Omit<Medication, 'createdAt'> = {
       name: name.trim(),
       dose: dose.trim(),
@@ -232,11 +251,36 @@ export function MedicationForm() {
         </button>
 
         {editing && (
-          <button className="btn-ghost w-full !text-rose-600" onClick={archive}>
+          <button
+            className="btn-ghost w-full !text-rose-600"
+            onClick={() => setConfirmRemove(true)}
+          >
             Remove medication
           </button>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmRemove}
+        title={`Remove ${name || 'this medication'}?`}
+        body="It will be moved to Archived, where you can restore it later."
+        confirmLabel="Remove"
+        onConfirm={archive}
+        onCancel={() => setConfirmRemove(false)}
+      />
+
+      <ConfirmDialog
+        open={dupName != null}
+        danger={false}
+        title={`You already have ${dupName}`}
+        body="A medication with this name already exists. Add it anyway?"
+        confirmLabel="Add anyway"
+        onConfirm={() => {
+          setDupName(null);
+          persist();
+        }}
+        onCancel={() => setDupName(null)}
+      />
     </div>
   );
 }
