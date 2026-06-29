@@ -4,7 +4,7 @@ import type { Insight } from '../core/module';
 import { InsightCard } from '../components/InsightCard';
 import { PageHeader } from '../components/PageHeader';
 import { EmptyState } from '../components/ui';
-import { SparkIcon } from '../components/icons';
+import { LightbulbIcon } from '../components/icons';
 
 /**
  * The full coach feed: every module's insights, ranked. This is the "analyze /
@@ -36,7 +36,7 @@ export function Coach() {
         <p className="px-1 text-sm text-slate-400">Thinking…</p>
       ) : insights.length === 0 ? (
         <EmptyState
-          icon={<SparkIcon />}
+          icon={<LightbulbIcon />}
           title="No insights yet"
           body="Log your medications and how you feel for a few days. Your coach will spot trends, streaks and things to watch."
         />
