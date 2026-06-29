@@ -17,3 +17,6 @@ dev-dist
 
 # TypeScript incremental build info
 *.tsbuildinfo
+
+# Generated single-file standalone build
+bm-health-companion.html

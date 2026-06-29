@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, createHashRouter } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
 import { Coach } from './pages/Coach';
@@ -13,7 +13,14 @@ import { modules } from './core/registry';
  * base path (including their index screen), so a new module brings its screens
  * without editing this file — only registry.ts changes.
  */
-export const router = createBrowserRouter(
+// A single self-contained build (opened from file://) needs hash-based routing,
+// since the History API can't push real paths without a server. The standalone
+// build sets VITE_STANDALONE; everything else uses normal browser routing.
+const createRouter = import.meta.env.VITE_STANDALONE
+  ? createHashRouter
+  : createBrowserRouter;
+
+export const router = createRouter(
   [
     {
       path: '/',
