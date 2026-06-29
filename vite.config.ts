@@ -46,6 +46,11 @@ export default defineConfig({
       workbox: {
         navigateFallback: `${base}offline.html`,
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // The on-demand OCR engine (~14MB) must not bloat the install precache;
+        // it's cached at runtime the first time the photo-import feature is used.
+        globIgnores: ['**/tesseract/**'],
+        // Allow the largest core wasm to be runtime-cached.
+        maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         runtimeCaching: [
           {
             urlPattern: ({ request }) => request.destination === 'document',
@@ -53,6 +58,25 @@ export default defineConfig({
             options: {
               cacheName: 'pages',
               networkTimeoutSeconds: 3,
+            },
+          },
+          {
+            // Self-hosted Tesseract worker + wasm engine.
+            urlPattern: ({ url }) => url.pathname.includes('/tesseract/'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'ocr-engine',
+              expiration: { maxEntries: 12 },
+            },
+          },
+          {
+            // Language model fetched once from the tessdata CDN, then cached.
+            urlPattern: ({ url }) => url.hostname.includes('tessdata'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'ocr-langdata',
+              expiration: { maxEntries: 4 },
+              cacheableResponse: { statuses: [0, 200] },
             },
           },
         ],

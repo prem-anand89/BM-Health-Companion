@@ -69,10 +69,14 @@ export function MedicationList() {
         </ul>
       )}
 
+      <Link to="/import" className="mt-6 block text-center text-sm font-semibold text-brand-700">
+        Import a medicine list
+      </Link>
+
       {!!archivedCount && (
         <Link
           to="/m/medications/archived"
-          className="mt-6 block text-center text-sm font-semibold text-slate-500"
+          className="mt-3 block text-center text-sm font-semibold text-slate-500"
         >
           Archived ({archivedCount})
         </Link>

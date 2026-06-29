@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
 import { Card, SectionHeader } from '../components/ui';
 import {
@@ -274,6 +275,9 @@ export function Settings() {
           <button className="btn-ghost" onClick={exportData}>
             Export my data (JSON)
           </button>
+          <Link to="/import" className="btn-ghost mt-3 w-full">
+            Import / restore data
+          </Link>
         </Card>
       </div>
 

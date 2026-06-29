@@ -6,6 +6,7 @@ import { Settings } from './pages/Settings';
 import { History } from './pages/History';
 import { Report } from './pages/Report';
 import { More } from './pages/More';
+import { Import } from './pages/Import';
 import { modules } from './core/registry';
 
 /**
@@ -33,6 +34,7 @@ export const router = createRouter(
         { path: 'history', element: <History /> },
         { path: 'report', element: <Report /> },
         { path: 'more', element: <More /> },
+        { path: 'import', element: <Import /> },
         ...modules.map((m) => ({
           path: `m/${m.id}`,
           children: m.routes,
