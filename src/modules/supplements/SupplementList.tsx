@@ -15,6 +15,10 @@ export function SupplementList() {
         .sort((a, b) => a.name.localeCompare(b.name)),
     [],
   );
+  const archivedCount = useLiveQuery(
+    async () => (await supplementsTable().toArray()).filter((s) => s.archived).length,
+    [],
+  );
 
   if (!supps) return null;
 
@@ -94,6 +98,15 @@ export function SupplementList() {
             );
           })}
         </div>
+      )}
+
+      {!!archivedCount && (
+        <Link
+          to="/m/supplements/archived"
+          className="mt-6 block text-center text-sm font-semibold text-slate-500"
+        >
+          Archived ({archivedCount})
+        </Link>
       )}
     </div>
   );

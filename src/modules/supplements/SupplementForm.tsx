@@ -10,6 +10,7 @@ import {
 import { dayKey } from '../../core/dates';
 import { PageHeader } from '../../components/PageHeader';
 import { Card } from '../../components/ui';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { PlusIcon } from '../../components/icons';
 
 const FORMS: SuppForm[] = ['tablet', 'capsule', 'softgel', 'powder', 'liquid', 'gummy', 'other'];
@@ -33,6 +34,7 @@ export function SupplementForm() {
   const [quantity, setQuantity] = useState('');
   const [notes, setNotes] = useState('');
   const [loaded, setLoaded] = useState(!editing);
+  const [confirmRemove, setConfirmRemove] = useState(false);
 
   const isProbiotic = category === 'probiotic';
 
@@ -287,11 +289,23 @@ export function SupplementForm() {
         </button>
 
         {editing && (
-          <button className="btn-ghost w-full !text-rose-600" onClick={archive}>
+          <button
+            className="btn-ghost w-full !text-rose-600"
+            onClick={() => setConfirmRemove(true)}
+          >
             Remove supplement
           </button>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmRemove}
+        title={`Remove ${name || 'this supplement'}?`}
+        body="It will be moved to Archived, where you can restore it later."
+        confirmLabel="Remove"
+        onConfirm={archive}
+        onCancel={() => setConfirmRemove(false)}
+      />
     </div>
   );
 }

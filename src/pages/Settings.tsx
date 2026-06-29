@@ -12,6 +12,7 @@ import {
   permissionStatus,
   requestPermission,
   notificationsSupported,
+  triggersSupported,
 } from '../core/notifications';
 import { collectReminders, modules } from '../core/registry';
 import { syncReminders } from '../core/notifications';
@@ -100,6 +101,7 @@ export function Settings() {
     a.download = `health-data-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    update({ lastExportAt: Date.now() });
   }
 
   return (
@@ -179,6 +181,13 @@ export function Settings() {
             </>
           )}
         </Card>
+        {!triggersSupported() && (
+          <p className="mt-2 px-1 text-xs text-slate-400">
+            On this device, reminders fire reliably only while the app is open in
+            the background. Keep it open (or installed to your home screen) so you
+            don't miss a dose.
+          </p>
+        )}
       </div>
 
       <div className="mt-6">

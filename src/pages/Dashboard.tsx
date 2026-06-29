@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { modules, collectReminders } from '../core/registry';
-import type { Reminder } from '../core/module';
+import { modules, collectReminders, collectInsights } from '../core/registry';
+import type { Reminder, Insight } from '../core/module';
+import { getPreferences, resolvePinned } from '../core/preferences';
 import { SectionHeader } from '../components/ui';
-import { GearIcon, CalendarIcon, ClipboardIcon, BellIcon } from '../components/icons';
+import { InsightCard } from '../components/InsightCard';
+import { TodaysPillsWidget } from '../components/TodaysPillsWidget';
+import { GearIcon, CalendarIcon, ClipboardIcon, BellIcon, ChevronRightIcon } from '../components/icons';
 import { permissionStatus, syncReminders } from '../core/notifications';
 
 export function Dashboard() {
   const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [warnings, setWarnings] = useState<Insight[]>([]);
 
   useEffect(() => {
     let active = true;
@@ -20,10 +24,22 @@ export function Dashboard() {
       setReminders(upcoming);
       if (permissionStatus() === 'granted') syncReminders(all);
     });
+    // Warnings surface on Home regardless of which modules are pinned, so a
+    // dangerous reading (BP crisis/low, missed critical dose) is never hidden.
+    collectInsights().then((all) => {
+      if (active) setWarnings(all.filter((i) => i.severity === 'warning'));
+    });
     return () => {
       active = false;
     };
   }, []);
+
+  const prefs = getPreferences();
+  const pinned = resolvePinned(prefs);
+  const showPills = pinned.includes('medications') || pinned.includes('supplements');
+  const otherWidgets = modules.filter(
+    (m) => pinned.includes(m.id) && m.id !== 'medications' && m.id !== 'supplements',
+  );
 
   const greeting = getGreeting();
 
@@ -38,6 +54,14 @@ export function Dashboard() {
           <GearIcon />
         </Link>
       </header>
+
+      {warnings.length > 0 && (
+        <section className="space-y-3">
+          {warnings.map((w) => (
+            <InsightCard key={w.id} insight={w} />
+          ))}
+        </section>
+      )}
 
       <section>
         <SectionHeader title="Reminders" />
@@ -58,7 +82,8 @@ export function Dashboard() {
       <section>
         <SectionHeader title="Today" />
         <div className="space-y-4">
-          {modules.map((m) => {
+          {showPills && <TodaysPillsWidget />}
+          {otherWidgets.map((m) => {
             const Widget = m.DashboardWidget;
             return <Widget key={m.id} />;
           })}
@@ -89,6 +114,13 @@ export function Dashboard() {
             </div>
           </Link>
         </div>
+        <Link
+          to="/more"
+          className="mt-3 flex items-center justify-between rounded-3xl bg-white p-4 shadow-sm active:scale-95 transition"
+        >
+          <span className="font-semibold text-slate-800 text-sm">More trackers</span>
+          <ChevronRightIcon className="text-slate-300" />
+        </Link>
       </section>
     </div>
   );

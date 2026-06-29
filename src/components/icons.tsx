@@ -157,3 +157,10 @@ export const ClipboardIcon = (p: IconProps) => (
     <path d="M9 12h6M9 16h4" />
   </svg>
 );
+
+/** Star for pin/unpin. Pass filled to render it solid. */
+export const StarIcon = ({ filled, ...p }: IconProps & { filled?: boolean }) => (
+  <svg {...base} fill={filled ? 'currentColor' : 'none'} {...p}>
+    <path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 17.8 6.8 19.2l1-5.8L3.5 9.2l5.9-.9L12 3z" />
+  </svg>
+);

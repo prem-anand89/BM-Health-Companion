@@ -8,6 +8,7 @@ import { SupplementsWidget } from './Widget';
 import { SupplementsHome } from './SupplementsHome';
 import { SupplementForm } from './SupplementForm';
 import { SupplementList } from './SupplementList';
+import { SupplementArchived } from './SupplementArchived';
 
 async function getReminders(): Promise<Reminder[]> {
   const today = dayKey();
@@ -45,6 +46,7 @@ export const supplementsModule: HealthModule = {
     { index: true, element: <SupplementsHome /> },
     { path: 'new', element: <SupplementForm /> },
     { path: 'list', element: <SupplementList /> },
+    { path: 'archived', element: <SupplementArchived /> },
     { path: ':id/edit', element: <SupplementForm /> },
   ],
   DashboardWidget: SupplementsWidget,

@@ -2,6 +2,7 @@ import type { HealthModule, Insight, Reminder } from './module';
 import { applyModuleSchema } from './db';
 import { rankInsights } from './insights';
 import { correlationInsights } from './correlationInsights';
+import { backupInsights } from './backupInsights';
 import { medicationsModule } from '../modules/medications/manifest';
 import { symptomsModule } from '../modules/symptoms/manifest';
 import { supplementsModule } from '../modules/supplements/manifest';
@@ -58,6 +59,13 @@ export async function collectInsights(): Promise<Insight[]> {
     (async () => {
       try {
         return await correlationInsights();
+      } catch {
+        return [] as Insight[];
+      }
+    })(),
+    (async () => {
+      try {
+        return await backupInsights(modules);
       } catch {
         return [] as Insight[];
       }

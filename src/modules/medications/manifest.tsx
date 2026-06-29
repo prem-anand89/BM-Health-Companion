@@ -8,6 +8,7 @@ import { MedicationsWidget } from './Widget';
 import { MedicationsHome } from './MedicationsHome';
 import { MedicationForm } from './MedicationForm';
 import { MedicationList } from './MedicationList';
+import { MedicationArchived } from './MedicationArchived';
 
 /** Build reminders for today's still-pending doses at their scheduled times. */
 async function getReminders(): Promise<Reminder[]> {
@@ -46,6 +47,7 @@ export const medicationsModule: HealthModule = {
     { index: true, element: <MedicationsHome /> },
     { path: 'new', element: <MedicationForm /> },
     { path: 'list', element: <MedicationList /> },
+    { path: 'archived', element: <MedicationArchived /> },
     { path: ':id/edit', element: <MedicationForm /> },
   ],
   DashboardWidget: MedicationsWidget,

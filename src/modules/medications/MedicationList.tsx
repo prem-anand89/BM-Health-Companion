@@ -16,6 +16,10 @@ export function MedicationList() {
         .sort((a, b) => a.name.localeCompare(b.name)),
     [],
   );
+  const archivedCount = useLiveQuery(
+    async () => (await medicationsTable().toArray()).filter((m) => m.archived).length,
+    [],
+  );
 
   return (
     <div>
@@ -63,6 +67,15 @@ export function MedicationList() {
             </li>
           ))}
         </ul>
+      )}
+
+      {!!archivedCount && (
+        <Link
+          to="/m/medications/archived"
+          className="mt-6 block text-center text-sm font-semibold text-slate-500"
+        >
+          Archived ({archivedCount})
+        </Link>
       )}
     </div>
   );

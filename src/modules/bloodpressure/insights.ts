@@ -43,6 +43,16 @@ export async function bpInsights(): Promise<Insight[]> {
         body: `${latest.systolic}/${latest.diastolic} mmHg (Stage 1 high). Lifestyle changes like reducing salt and staying active can help.`,
       }),
     );
+  } else if (cat === 'low') {
+    insights.push(
+      makeInsight({
+        moduleId: MODULE_ID,
+        severity: 'warning',
+        title: 'Blood pressure is low',
+        body: `${latest.systolic}/${latest.diastolic} mmHg is on the low side, which can cause dizziness or falls. Stand up slowly, stay hydrated, and mention it to your doctor if it keeps happening.`,
+        cta: { label: 'Log another reading', to: '/m/bloodpressure/log' },
+      }),
+    );
   }
 
   // Systolic trend
