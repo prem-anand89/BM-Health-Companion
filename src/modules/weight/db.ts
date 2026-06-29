@@ -8,6 +8,8 @@ export interface WeightLog {
   id?: number;
   value: number;
   unit: WeightUnit;
+  /** Waist circumference in cm (always stored in cm regardless of unit preference). */
+  waistCm?: number;
   recordedAt: number;
   dayKey: string;
 }
@@ -37,4 +39,22 @@ export function bmiCategory(bmi: number): string {
   if (bmi < 25) return 'Normal';
   if (bmi < 30) return 'Overweight';
   return 'Obese';
+}
+
+/** Waist-to-height ratio (dimensionless; both values in cm). */
+export function calcWHtR(waistCm: number, heightCm: number): number {
+  return waistCm / heightCm;
+}
+
+export function whtRCategory(ratio: number): string {
+  if (ratio < 0.4) return 'Extremely slim';
+  if (ratio < 0.5) return 'Healthy';
+  if (ratio < 0.6) return 'Overweight';
+  return 'High risk';
+}
+
+export function whtRColor(ratio: number): string {
+  if (ratio < 0.5) return 'text-emerald-600';
+  if (ratio < 0.6) return 'text-amber-600';
+  return 'text-rose-600';
 }

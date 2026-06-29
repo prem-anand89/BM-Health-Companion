@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { supplementsTable, type SupplementForm as SuppForm, type Supplement } from './db';
+import {
+  supplementsTable,
+  SUPPLEMENT_CATEGORIES,
+  type SupplementForm as SuppForm,
+  type SupplementCategory,
+  type Supplement,
+} from './db';
 import { dayKey } from '../../core/dates';
 import { PageHeader } from '../../components/PageHeader';
 import { Card } from '../../components/ui';
@@ -17,6 +23,9 @@ export function SupplementForm() {
   const [name, setName] = useState('');
   const [dose, setDose] = useState('');
   const [form, setForm] = useState<SuppForm>('capsule');
+  const [category, setCategory] = useState<SupplementCategory>('other');
+  const [strains, setStrains] = useState('');
+  const [cfuBillions, setCfuBillions] = useState('');
   const [times, setTimes] = useState<string[]>(['08:00']);
   const [daysOfWeek, setDaysOfWeek] = useState<number[]>([]);
   const [startDate, setStartDate] = useState(dayKey());
@@ -24,6 +33,8 @@ export function SupplementForm() {
   const [quantity, setQuantity] = useState('');
   const [notes, setNotes] = useState('');
   const [loaded, setLoaded] = useState(!editing);
+
+  const isProbiotic = category === 'probiotic';
 
   useEffect(() => {
     if (!editing) return;
@@ -34,6 +45,9 @@ export function SupplementForm() {
         setName(s.name);
         setDose(s.dose);
         setForm(s.form);
+        setCategory(s.category ?? 'other');
+        setStrains(s.strains ?? '');
+        setCfuBillions(s.cfuBillions?.toString() ?? '');
         setTimes(s.times.length ? s.times : ['08:00']);
         setDaysOfWeek(s.daysOfWeek);
         setStartDate(s.startDate);
@@ -59,10 +73,14 @@ export function SupplementForm() {
 
   async function save() {
     if (!name.trim()) return;
+    const cfu = parseFloat(cfuBillions);
     const fields: Omit<Supplement, 'createdAt'> = {
       name: name.trim(),
       dose: dose.trim(),
       form,
+      category,
+      strains: isProbiotic && strains.trim() ? strains.trim() : undefined,
+      cfuBillions: isProbiotic && !isNaN(cfu) && cfu > 0 ? cfu : undefined,
       times: [...new Set(times)].sort(),
       daysOfWeek,
       startDate,
@@ -91,12 +109,33 @@ export function SupplementForm() {
       <PageHeader title={editing ? 'Edit supplement' : 'Add supplement'} back />
 
       <div className="space-y-4">
+        {/* Category */}
+        <Card className="space-y-3">
+          <label className="field-label">Category</label>
+          <div className="flex flex-wrap gap-2">
+            {SUPPLEMENT_CATEGORIES.map((c) => (
+              <button
+                key={c.value}
+                type="button"
+                onClick={() => setCategory(c.value)}
+                className={`flex items-center gap-1.5 rounded-2xl px-3 py-2 text-sm font-semibold transition ${
+                  category === c.value
+                    ? 'bg-amber-500 text-white'
+                    : 'bg-amber-50 text-amber-700'
+                }`}
+              >
+                <span>{c.emoji}</span> {c.label}
+              </button>
+            ))}
+          </div>
+        </Card>
+
         <Card className="space-y-4">
           <div>
             <label className="field-label">Name</label>
             <input
               className="field-input"
-              placeholder="e.g. Vitamin D3"
+              placeholder={isProbiotic ? 'e.g. Daily Probiotic' : 'e.g. Vitamin D3'}
               value={name}
               onChange={(e) => setName(e.target.value)}
               autoFocus={!editing}
@@ -104,10 +143,12 @@ export function SupplementForm() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="field-label">Dose</label>
+              <label className="field-label">
+                {isProbiotic ? 'CFU / dose' : 'Dose'}
+              </label>
               <input
                 className="field-input"
-                placeholder="e.g. 1000 IU"
+                placeholder={isProbiotic ? 'e.g. 10 billion CFU' : 'e.g. 1000 IU'}
                 value={dose}
                 onChange={(e) => setDose(e.target.value)}
               />
@@ -125,6 +166,32 @@ export function SupplementForm() {
               </select>
             </div>
           </div>
+
+          {/* Probiotic-specific fields */}
+          {isProbiotic && (
+            <>
+              <div>
+                <label className="field-label">Strains (optional)</label>
+                <input
+                  className="field-input"
+                  placeholder="e.g. L. acidophilus, B. longum"
+                  value={strains}
+                  onChange={(e) => setStrains(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="field-label">CFU count (billions, optional)</label>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  className="field-input"
+                  placeholder="e.g. 10"
+                  value={cfuBillions}
+                  onChange={(e) => setCfuBillions(e.target.value)}
+                />
+              </div>
+            </>
+          )}
         </Card>
 
         <Card className="space-y-3">
@@ -208,7 +275,7 @@ export function SupplementForm() {
             <textarea
               className="field-input"
               rows={2}
-              placeholder="e.g. take with food"
+              placeholder={isProbiotic ? 'e.g. take on empty stomach, refrigerate' : 'e.g. take with food'}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
