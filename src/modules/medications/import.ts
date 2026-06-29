@@ -141,13 +141,13 @@ export async function recognisePrescription(
 ): Promise<string> {
   const { createWorker } = await import('tesseract.js');
   const base = import.meta.env.BASE_URL;
-  // The OCR worker + wasm engine are self-hosted (no CDN). The ~1.5MB English
-  // language model is fetched once from the default tessdata CDN and then
-  // cached; the prescription image itself is always processed locally in the
-  // browser and never uploaded anywhere.
+  // Worker, wasm engine AND the English language model are all self-hosted under
+  // /tesseract — so OCR works fully offline and nothing is fetched from a CDN.
+  // The prescription image is always processed locally and never uploaded.
   const worker = await createWorker('eng', 1, {
     workerPath: `${base}tesseract/worker.min.js`,
     corePath: `${base}tesseract/`,
+    langPath: `${base}tesseract`,
     logger: (m: { status: string; progress: number }) => {
       if (m.status === 'recognizing text') onProgress?.(m.progress);
     },

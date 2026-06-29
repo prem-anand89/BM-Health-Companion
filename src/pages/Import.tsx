@@ -213,9 +213,16 @@ function MedicineImport() {
     setOcrProgress(0);
     try {
       const text = await recognisePrescription(file, (f) => setOcrProgress(f));
-      setMeds(parseMedText(text));
-    } catch {
-      setError('Could not read that image. Try a clearer, well-lit photo.');
+      const parsed = parseMedText(text);
+      setMeds(parsed);
+      if (parsed.length === 0) {
+        setError('No medicine names were recognised. Try a clearer, well-lit, straight-on photo.');
+      }
+    } catch (e) {
+      setError(
+        `Could not read that image: ${e instanceof Error ? e.message : 'unknown error'}. ` +
+          'A clearer photo or a working connection (for first-time setup) may help.',
+      );
     } finally {
       setOcrProgress(null);
     }

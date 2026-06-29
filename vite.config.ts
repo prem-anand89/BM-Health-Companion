@@ -78,25 +78,6 @@ export default defineConfig({
               cacheableResponse: { statuses: [0, 200] },
             },
           },
-          {
-            // Self-hosted Tesseract worker + wasm engine.
-            urlPattern: ({ url }) => url.pathname.includes('/tesseract/'),
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'ocr-engine',
-              expiration: { maxEntries: 12 },
-            },
-          },
-          {
-            // Language model fetched once from the tessdata CDN, then cached.
-            urlPattern: ({ url }) => url.hostname.includes('tessdata'),
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'ocr-langdata',
-              expiration: { maxEntries: 4 },
-              cacheableResponse: { statuses: [0, 200] },
-            },
-          },
         ],
       },
       devOptions: {
