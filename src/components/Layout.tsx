@@ -1,7 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import { primaryNavModules } from '../core/registry';
-import { HomeIcon, SparkIcon } from './icons';
+import { HomeIcon, LightbulbIcon } from './icons';
 
 interface Tab {
   to: string;
@@ -20,7 +20,7 @@ export function Layout() {
       label: m.title,
       icon: m.icon,
     })),
-    { to: '/coach', label: 'Coach', icon: <SparkIcon /> },
+    { to: '/coach', label: 'Coach', icon: <LightbulbIcon /> },
   ];
 
   return (

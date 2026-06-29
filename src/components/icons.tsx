@@ -44,6 +44,16 @@ export const SparkIcon = (p: IconProps) => (
   </svg>
 );
 
+/** Lightbulb — used for the Coach feed so it reads as "ideas/insights" and is
+ *  visually distinct from the radial settings gear. */
+export const LightbulbIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <path d="M9 18h6" />
+    <path d="M10 21h4" />
+    <path d="M12 3a6 6 0 0 0-4 10.5c.7.6 1 1.3 1 2.5h6c0-1.2.3-1.9 1-2.5A6 6 0 0 0 12 3z" />
+  </svg>
+);
+
 export const GearIcon = (p: IconProps) => (
   <svg {...base} {...p}>
     <circle cx="12" cy="12" r="3" />
