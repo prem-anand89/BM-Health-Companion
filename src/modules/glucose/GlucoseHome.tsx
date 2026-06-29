@@ -54,9 +54,14 @@ export function GlucoseHome() {
           title="No readings yet"
           body="Log your blood glucose readings to track trends and stay in your target range."
           action={
-            <Link to="/m/glucose/log" className="btn-primary">
-              <PlusIcon className="!h-5 !w-5" /> Log reading
-            </Link>
+            <div className="flex flex-col items-center gap-2">
+              <Link to="/m/glucose/log" className="btn-primary">
+                <PlusIcon className="!h-5 !w-5" /> Log reading
+              </Link>
+              <Link to="/import" className="text-sm font-semibold text-brand-700">
+                Import a CGM report
+              </Link>
+            </div>
           }
         />
       ) : (
@@ -104,6 +109,10 @@ export function GlucoseHome() {
               })}
             </ul>
           </section>
+
+          <Link to="/import" className="block text-center text-sm font-semibold text-brand-700">
+            Import a CGM report
+          </Link>
         </div>
       )}
     </div>
