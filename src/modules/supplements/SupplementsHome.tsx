@@ -86,15 +86,7 @@ export function SupplementsHome() {
           {due === 0 ? (
             <EmptyState title="Nothing scheduled today" body="Enjoy your day!" />
           ) : (
-            <ul className="space-y-3">
-              {doses.map((dose) => (
-                <SupplementRow
-                  key={`${dose.supp.id}-${dose.time}`}
-                  dose={dose}
-                  onRecord={record}
-                />
-              ))}
-            </ul>
+            <DoseList doses={doses} onRecord={record} />
           )}
 
           <Link
@@ -103,6 +95,41 @@ export function SupplementsHome() {
           >
             Manage all supplements
           </Link>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DoseList({
+  doses,
+  onRecord,
+}: {
+  doses: SupplementDose[];
+  onRecord: (d: SupplementDose, s: SupplementStatus) => void;
+}) {
+  const probiotics = doses.filter((d) => d.supp.category === 'probiotic');
+  const others = doses.filter((d) => d.supp.category !== 'probiotic');
+
+  return (
+    <div className="space-y-5">
+      {others.length > 0 && (
+        <ul className="space-y-3">
+          {others.map((dose) => (
+            <SupplementRow key={`${dose.supp.id}-${dose.time}`} dose={dose} onRecord={onRecord} />
+          ))}
+        </ul>
+      )}
+      {probiotics.length > 0 && (
+        <div>
+          <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-600">
+            <span>🦠</span> Probiotics
+          </p>
+          <ul className="space-y-3">
+            {probiotics.map((dose) => (
+              <SupplementRow key={`${dose.supp.id}-${dose.time}`} dose={dose} onRecord={onRecord} />
+            ))}
+          </ul>
         </div>
       )}
     </div>
@@ -133,9 +160,13 @@ function SupplementRow({
             </p>
             <p className="truncate text-sm text-slate-500">
               {dose.supp.dose} · {dose.supp.form}
+              {dose.supp.cfuBillions ? ` · ${dose.supp.cfuBillions}B CFU` : ''}
               {skipped && ' · skipped'}
               {stopped && ' · stopped'}
             </p>
+            {dose.supp.strains && (
+              <p className="truncate text-xs text-slate-400">{dose.supp.strains}</p>
+            )}
           </div>
         </div>
         <div className="flex gap-2">

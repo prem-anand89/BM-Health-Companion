@@ -8,7 +8,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
-import { weightLogsTable, fmtWeight, toKg, calcBMI, bmiCategory } from './db';
+import { weightLogsTable, fmtWeight, toKg, calcBMI, bmiCategory, calcWHtR, whtRCategory } from './db';
 import { getPreferences } from '../../core/preferences';
 import { lastNDayKeys, friendlyDay } from '../../core/dates';
 import { PageHeader } from '../../components/PageHeader';
@@ -28,6 +28,10 @@ export function WeightHome() {
   const latest = logs[0];
   const latestKg = latest ? toKg(latest.value, latest.unit) : null;
   const bmi = latestKg && prefs.heightCm ? calcBMI(latestKg, prefs.heightCm) : null;
+  const whtr =
+    latest?.waistCm && prefs.heightCm
+      ? calcWHtR(latest.waistCm, prefs.heightCm)
+      : null;
 
   // Change vs earliest in window
   const windowKg = logs.slice(0, 30).map((l) => toKg(l.value, l.unit));
@@ -65,6 +69,7 @@ export function WeightHome() {
             <StatTile
               label="Current"
               value={latest ? fmtWeight(latest.value, latest.unit) : '—'}
+              hint={change !== null ? `${change >= 0 ? '+' : ''}${change.toFixed(1)} kg vs earliest` : undefined}
             />
             {bmi ? (
               <StatTile
@@ -72,16 +77,22 @@ export function WeightHome() {
                 value={bmi.toFixed(1)}
                 hint={bmiCategory(bmi)}
               />
-            ) : change !== null ? (
-              <StatTile
-                label="Change"
-                value={`${change >= 0 ? '+' : ''}${change.toFixed(1)} kg`}
-                hint="vs. earliest logged"
-              />
             ) : (
               <StatTile label="Entries" value={logs.length} />
             )}
           </div>
+          {whtr !== null && (
+            <div className="grid grid-cols-2 gap-3">
+              <StatTile
+                label="Waist-to-Height"
+                value={whtr.toFixed(2)}
+                hint={whtRCategory(whtr)}
+              />
+              {latest?.waistCm && (
+                <StatTile label="Waist" value={`${latest.waistCm} cm`} />
+              )}
+            </div>
+          )}
 
           {chartData.some((d) => d.value !== null) && (
             <Card>
@@ -107,7 +118,12 @@ export function WeightHome() {
               {logs.slice(0, 20).map((log) => (
                 <li key={log.id}>
                   <Card className="flex items-center justify-between">
-                    <p className="font-semibold text-slate-800">{fmtWeight(log.value, log.unit)}</p>
+                    <div>
+                      <p className="font-semibold text-slate-800">{fmtWeight(log.value, log.unit)}</p>
+                      {log.waistCm && (
+                        <p className="text-xs text-slate-500">Waist: {log.waistCm} cm</p>
+                      )}
+                    </div>
                     <p className="text-sm text-slate-500">{friendlyDay(log.recordedAt)}</p>
                   </Card>
                 </li>

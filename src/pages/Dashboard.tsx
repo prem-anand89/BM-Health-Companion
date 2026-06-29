@@ -1,33 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { modules, collectInsights, collectReminders } from '../core/registry';
-import type { Insight } from '../core/module';
-import { InsightCard } from '../components/InsightCard';
+import { modules, collectReminders } from '../core/registry';
 import { SectionHeader } from '../components/ui';
 import { GearIcon, CalendarIcon, ClipboardIcon } from '../components/icons';
 import { permissionStatus, syncReminders } from '../core/notifications';
 
-/**
- * Home dashboard. It is a thin aggregator: it renders each module's own
- * DashboardWidget and the top coach insights. It has no module-specific code,
- * so new modules appear here automatically.
- */
 export function Dashboard() {
-  const [insights, setInsights] = useState<Insight[]>([]);
-
   useEffect(() => {
-    let active = true;
-    collectInsights().then((all) => {
-      if (active) setInsights(all.slice(0, 3));
-    });
-    // Re-arm reminders whenever the dashboard mounts (e.g. app reopened).
     if (permissionStatus() === 'granted') {
       collectReminders().then(syncReminders);
     }
-    return () => {
-      active = false;
-    };
   }, []);
 
   const greeting = getGreeting();
@@ -43,24 +26,6 @@ export function Dashboard() {
           <GearIcon />
         </Link>
       </header>
-
-      {insights.length > 0 && (
-        <section>
-          <SectionHeader
-            title="Your coach"
-            action={
-              <Link to="/coach" className="text-sm font-semibold text-brand-700">
-                See all
-              </Link>
-            }
-          />
-          <div className="space-y-3">
-            {insights.map((i) => (
-              <InsightCard key={i.id} insight={i} />
-            ))}
-          </div>
-        </section>
-      )}
 
       <section>
         <SectionHeader title="Today" />
